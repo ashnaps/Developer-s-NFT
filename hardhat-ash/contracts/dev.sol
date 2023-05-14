@@ -59,6 +59,7 @@ contract dev is ERC721Enumerable, Ownable {
     //Openzeppelin's ERC721 by default returned an empty string for the baseURI
 
     //to prevent spams
+    
     function setPaused(bool val) public onlyOwner {
         _paused = val;
     }
