@@ -1,11 +1,12 @@
-import { useEffect, useRef, useState } from "react";
-import { walletconnect } from "web3modal/dist/providers/connectors";
-import Web3Modal from "web3modal"
+import React, { useEffect, useRef, useState } from "react";
+import Web3Modal from "web3modal";
 import Head from "next/head";
-import ethers from "ethers"
+import {providers} from "ethers";
+import styles from "../styles/Home.module.css";
+
 
 export default function Home() {
-  const [walletConnected,setWalletConnected] = useState(false);
+  const [walletConnected, setWalletConnected] = useState(false);
   const web3ModalRef = useRef();
 
   const connectWallet = async() => {
@@ -13,11 +14,11 @@ export default function Home() {
     setWalletConnected(true);
   };
 
-  const getProviderOrSigner = async(needSigner = false) {
+  const getProviderOrSigner = async (needSigner = false) => {
     const provider = await web3ModalRef.current.connect();
-    const web3Provider = new ethers.providers.web3Provider(provider);
+    const web3Provider = new providers.Web3Provider(provider);
     
-    const {chainId} = await web3Provider.getNetwork();
+    const { chainId } = await web3Provider.getNetwork();
     if (chainId !==5 ) {
       window.alert("Please switch to the goerli");
       throw new Error("Incorrect network");
@@ -29,11 +30,12 @@ export default function Home() {
     }
 
     //will ask user to connect the wallet, pop up
-
-  }
+    // setWalletConnected(true);
+    return web3Provider;
+  };
 
   useEffect (() => {
-    if(!walletconnected) {
+    if(!walletConnected) {
       web3ModalRef.current = new Web3Modal({
         network: "goerli",
         providerOptions: {},
@@ -41,14 +43,15 @@ export default function Home() {
       });
       connectWallet();
     }
-  },[]);
+  },[walletConnected]);
+
 
  
   return (
   <div>
-    <head>
+    <Head>
       <title>Crypto NFT</title>
-    </head>
+    </Head>
     <div className={styles.main}>
       {walletConnected ? ( <button onClick={connectWallet} className={styles.button}>Connect wallet</button>
 ) : null}
