@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Web3Modal from "web3modal";
 import Head from "next/head";
+import { ethers } from 'ethers';
 import {providers} from "ethers";
 import styles from "../styles/Home.module.css";
 
@@ -16,10 +17,15 @@ export default function Home() {
 
   const getProviderOrSigner = async (needSigner = false) => {
     const provider = await web3ModalRef.current.connect();
-    const web3Provider = new providers.Web3Provider(provider);
+    //const web3Provider = new providers.Web3Provider(provider);
+    //const web3Provider = new providers.Web3Provider(provider);
+    const web3Provider = new ethers.BrowserProvider(window.ethereum);
+
+    //const web3Provider = new ethers.providers.Web3Provider(web3.currentProvider);
+    
     
     const { chainId } = await web3Provider.getNetwork();
-    if (chainId !==5 ) {
+    if (chainId !== 5 ) {
       window.alert("Please switch to the goerli");
       throw new Error("Incorrect network");
     }
