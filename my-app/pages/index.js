@@ -4,6 +4,8 @@ import Head from "next/head";
 import { ethers } from 'ethers';
 import {providers} from "ethers";
 import styles from "../styles/Home.module.css";
+import Web3 from 'web3';
+
 
 
 export default function Home() {
@@ -25,8 +27,9 @@ export default function Home() {
     
     
     const { chainId } = await web3Provider.getNetwork();
-    if (chainId !== 5 ) {
-      window.alert("Please switch to the goerli");
+    //const chainId = await web3.eth.net.getId();
+    if (chainId !== 11155111) {
+      window.alert("Please switch to the Sepolia");
       throw new Error("Incorrect network");
     }
 
@@ -43,7 +46,7 @@ export default function Home() {
   useEffect (() => {
     if(!walletConnected) {
       web3ModalRef.current = new Web3Modal({
-        network: "goerli",
+        network: "Sepolia",
         providerOptions: {},
         disableInjectedProvider: false,
       });
