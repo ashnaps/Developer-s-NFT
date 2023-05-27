@@ -12,14 +12,31 @@ export default function Home() {
   const [walletConnected, setWalletConnected] = useState(false);
   const web3ModalRef = useRef();
 
-  const connectWallet = async() => {
-    await getProviderOrSigner();
-    setWalletConnected(true);
-  };
+const startPresale = async() => {
+  []
+}
+
+const checkIfPresaleStarted = async() => {
+  try{
+
+  }
+  catch(error){
+    console.error(error)
+  }
+};
+
+  async function connectWallet() {
+    try {
+      await getProviderOrSigner();
+      setWalletConnected(true);
+    }
+    catch (error) {
+      console.error(error);
+    }
+  }
 
   const getProviderOrSigner = async (needSigner = false) => {
     const provider = await web3ModalRef.current.connect();
-    //const web3Provider = new providers.Web3Provider(provider);
     //const web3Provider = new providers.Web3Provider(provider);
     const web3Provider = new ethers.BrowserProvider(window.ethereum);
 
@@ -28,8 +45,8 @@ export default function Home() {
     
     const { chainId } = await web3Provider.getNetwork();
     //const chainId = await web3.eth.net.getId();
-    if (chainId !== 11155111) {
-      window.alert("Please switch to the Sepolia");
+    if (chainId !== 5) {
+      window.alert("Please switch to the goerli");
       throw new Error("Incorrect network");
     }
 
@@ -46,7 +63,7 @@ export default function Home() {
   useEffect (() => {
     if(!walletConnected) {
       web3ModalRef.current = new Web3Modal({
-        network: "Sepolia",
+        network: "goerli",
         providerOptions: {},
         disableInjectedProvider: false,
       });
@@ -62,8 +79,8 @@ export default function Home() {
       <title>Crypto NFT</title>
     </Head>
     <div className={styles.main}>
-      {walletConnected ? ( <button onClick={connectWallet} className={styles.button}>Connect wallet</button>
-) : null}
+      {walletConnected ? null : ( <button onClick={connectWallet} className={styles.button}>Connect wallet</button>
+)}
     </div>
   </div>
   );
