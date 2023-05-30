@@ -2,23 +2,70 @@ import React, { useEffect, useRef, useState } from "react";
 import Web3Modal from "web3modal";
 import Head from "next/head";
 import { ethers } from 'ethers';
-import {providers} from "ethers";
+import {providers,Contract} from "ethers";
 import styles from "../styles/Home.module.css";
 import Web3 from 'web3';
+import {NFT_CONTRACT_ADDRESS, NFT_CONTRACT_ABI} from "../constants";
 
 
 
 export default function Home() {
+  const [isOwner, setIsOwner] = useState(false);
+  const [presaleStarted, setPreSaleStarted] = useState(false);
   const [walletConnected, setWalletConnected] = useState(false);
   const web3ModalRef = useRef();
 
+//startPresale() must be accesible by owner only so, putting an another function
+const getOwner = async() => {
+  try{
+    const signer=await getProviderOrSigner();
+    const nftContract = new Contract(NFT_CONTRACT_ADDRESS,NFT_CONTRACT_ABI, signer);
+    const owner = nftContract.owner();
+    const userAddress = signer.getAddress();
+    if(owner.toLowerCase() === userAddress.toLowerCase()){
+        setIsOwner(true);
+    }
+  }
+  catch(error){
+    console.log(error);
+  }
+}
+
+
 const startPresale = async() => {
-  []
+  try{
+    const signer = await getProviderOrSigner(true);
+    const nftContract = new Contract(NFT_CONTRACT_ADDRESS, NFT_CONTRACT_ABI, signer);
+    const txn = await nftContract.startPresale();
+    await txn.wait();
+    setPreSaleStarted(true);
+  }
+  catch(error){
+    console.error(error)
+  }
+};
+
+const chedkIfPresaleEnded = async () => {
+  try{
+  const provider=await getProviderOrSigner();
+  const nftContract = new Contract(NFT_CONTRACT_ADDRESS,NFT_CONTRACT_ABI, provider);
+  const presaleEndTime =await nftContract.presaleEnded();
+  const currentTimeInSeconds = Date.now()/1000;
+  const hasPresaleEnded = presaleEndTime.lt(Math.floor(currentTimeInSeconds));
+  setPresaleEnded(hasPresaleEnded);
+  }
+  catch(error){
+    console.error(error);
+  }
 }
 
 const checkIfPresaleStarted = async() => {
   try{
-
+    const provider=await getProviderOrSigner();
+    //get instance of nft contract
+    const nftContract = new Contract(NFT_CONTRACT_ADDRESS,NFT_CONTRACT_ABI, provider);
+    const isPresaleStarted = await nftContract.presaleStarted();
+    setPresaleStarted(isPresaleStarted);
   }
   catch(error){
     console.error(error)
@@ -68,6 +115,7 @@ const checkIfPresaleStarted = async() => {
         disableInjectedProvider: false,
       });
       connectWallet();
+      checkIfPresaleStarted();
     }
   },[walletConnected]);
 
