@@ -1,3 +1,3 @@
-# Developer's-NFT
-<p>Will be updated soon</p>
-commit last
+# Developer's-NFT (Ongoing)
+
+
